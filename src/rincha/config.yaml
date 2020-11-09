@@ -1,0 +1,43 @@
+model:
+  batch_size: 32
+  accumulate: 1
+  name: tf_efficientnet_b3_ns
+  pool: GeM
+  figsize: 384
+  slice: 0
+  slice_mode: PE
+optimizer:
+  lr: 1e-3
+  num_epochs: 1
+  swa: 0
+  scheduler: warm_constant
+  name: adam
+  lookahead: 0
+  warmup: 0
+second:
+  use_val: 0
+  model_name: ???
+  name: ???
+  hop: 0
+  backborn: cnn
+  dropout_rate: 0.2
+  spatial_dropout: 0
+  num_classes: 9
+  input_double: 0
+pred:
+  gpu: ???
+exp:
+  fold: ???
+  k_folds: 5
+  seed: 7
+  tta: 1
+  fp16: 1
+  resume: 0
+  cuda: 1
+  name: 384-b3
+  pred: valid
+  external: 1
+
+hydra:
+  run:
+    dir: /root/workdir/output/result_tb/${model.name}/${exp.name}/${exp.fold}

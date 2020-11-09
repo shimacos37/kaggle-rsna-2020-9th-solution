@@ -1,0 +1,59 @@
+defaults:
+  - hydra/job_logging: colorlog
+  - hydra/hydra_logging: colorlog
+
+workdir: ${store.workdir}
+data:
+  seed: 777
+  is_train: True
+  label_cols:
+    [
+      "pe_present_on_image",
+      "negative_exam_for_pe",
+      "indeterminate",
+      "chronic_pe",
+      "acute_and_chronic_pe",
+      "central_pe",
+      "leftsided_pe",
+      "rightsided_pe",
+      "rv_lv_ratio_gte_1",
+      "rv_lv_ratio_lt_1",
+    ]
+  convert_label_cols:
+    [
+      "pe_present_on_image",
+      "pe",
+      "central_pe",
+      "leftsided_pe",
+      "rightsided_pe",
+      "rv_lv",
+      "pe_type",
+    ]
+  meta_feature_cols:
+    [
+      "KVP",
+      "XRayTubeCurrent",
+      "Exposure",
+      "SliceThickness",
+      "ImagePositionPatient_x",
+      "ImagePositionPatient_y",
+      "ImagePositionPatient_z",
+    ]
+
+store:
+  workdir: /root/workdir
+  model_name: stacking_test
+  root_path: ${store.workdir}/output/${store.model_name}
+  save_path: ${store.workdir}/output/${store.model_name}
+  model_path: ${store.workdir}/output/${store.model_name}/model
+  log_path: ${store.workdir}/output/${store.model_name}/logs
+  result_path: ${store.workdir}/output/${store.model_name}/result
+  gcs_path: ${store.model_name}
+  save_feature: False
+  wandb_project:
+  gcs_project:
+  bucket_name:
+
+hydra:
+  run:
+    dir: ${store.save_path}

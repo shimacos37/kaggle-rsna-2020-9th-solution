@@ -1,0 +1,96 @@
+defaults:
+  - hydra/job_logging: colorlog
+  - hydra/hydra_logging: colorlog
+
+base:
+  gpu_id: ["0"]
+  num_cores: 8
+  loss_name: rsna_loss
+  scheduler_name: warmup_scheduler
+  opt_name: adam
+
+data:
+  workdir: ${store.workdir}
+  dataset_name: rsna_dataset
+  csv_path: ${store.workdir}/input/train_clean.csv
+  image_mode: small
+  image_size: 256
+  n_fold: 0
+  seed: 777
+  is_train: True
+  use_pseudo_label: False
+  use_jpeg: False
+  max_frame: 64
+  slide_size: 48
+  label_cols:
+    [
+      "pe_present_on_image",
+      "negative_exam_for_pe",
+      "indeterminate",
+      "chronic_pe",
+      "acute_and_chronic_pe",
+      "central_pe",
+      "leftsided_pe",
+      "rightsided_pe",
+      "rv_lv_ratio_gte_1",
+      "rv_lv_ratio_lt_1",
+    ]
+  meta_feature_cols:
+    [
+      "KVP",
+      "XRayTubeCurrent",
+      "Exposure",
+      "SliceThickness",
+      "ImagePositionPatient_x",
+      "ImagePositionPatient_y",
+      "ImagePositionPatient_z",
+    ]
+
+model:
+  backbone: regnetx_064
+  model_name: 2dcnn
+  # for 1dcnn
+  in_channels: 3
+  num_classes: 9
+  num_layers: 2
+  num_heads: 8
+  num_feature: 2055
+  dropout_rate: 0.1
+  is_pretrained: False
+  n_fold: ${data.n_fold}
+  label_cols: ${data.label_cols}
+
+store:
+  workdir: /root/workdir
+  model_name: baseline
+  root_path: ${store.workdir}/output/${store.model_name}
+  save_path: ${store.workdir}/output/${store.model_name}/fold${data.n_fold}
+  feature_path: ${store.workdir}/output/${store.model_name}/fold${data.n_fold}/feature/
+  extact_feature_model_path: ${store.workdir}/output/${store.model_name}/fold${data.n_fold}/model
+  model_path: ${store.workdir}/output/${store.model_name}/fold${data.n_fold}/model
+  log_path: ${store.workdir}/output/${store.model_name}/fold${data.n_fold}/logs
+  result_path: ${store.workdir}/output/${store.model_name}/fold${data.n_fold}/result
+  gcs_path: ${store.model_name}/fold${data.n_fold}
+  save_feature: False
+  wandb_project:
+  gcs_project:
+  bucket_name:
+
+train:
+  seed: ${data.seed}
+  epoch: 20
+  batch_size: 8
+  accumulation_steps: 1
+  learning_rate: 0.001
+  warm_start: False
+  refinement_step: 5
+  patience: 2
+
+test:
+  is_tta: False
+  is_validation: False
+  batch_size: 128
+
+hydra:
+  run:
+    dir: ${store.save_path}
