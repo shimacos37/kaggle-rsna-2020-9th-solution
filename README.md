@@ -11,7 +11,7 @@ Please read [this post](https://www.kaggle.com/c/rsna-str-pulmonary-embolism-det
 
 ## Hardware
 
-Our team mainly use cloud machine with following spec on GCP Platform.
+Our team mainly use cloud machine with following spec on GCP.
 ```
 OS: Ubuntu 18.04 LTS
 GPU: Tesla V100 x4
